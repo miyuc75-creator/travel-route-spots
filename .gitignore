@@ -31,8 +31,21 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # env files (API keys)
-.env
-.env*.local
+.env*
+!.env.example
+
+# credentials & certificates
+*credentials*.json
+*service-account*.json
+*service_account*.json
+google-services.json
+*.key
+*.p12
+*.pfx
+
+# auth config
+.npmrc
+.netrc
 
 # vercel
 .vercel
