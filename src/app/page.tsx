@@ -1,3 +1,4 @@
+import { RouteSearchForm } from "@/components/RouteSearchForm";
 import { SetupGuide } from "@/components/SetupGuide";
 import { getEnvSetupStatus } from "@/lib/env";
 
@@ -20,7 +21,18 @@ export default function Home() {
           </p>
         </div>
 
-        <SetupGuide envStatus={envStatus} />
+        <RouteSearchForm disabled={!envStatus.ready} />
+
+        {!envStatus.ready && (
+          <p className="text-sm text-amber-700">
+            ルート検索フォームを使うには、先に Google Maps API キーを設定してください。
+          </p>
+        )}
+
+        <SetupGuide
+          envStatus={envStatus}
+          defaultOpen={!envStatus.ready}
+        />
       </main>
     </div>
   );

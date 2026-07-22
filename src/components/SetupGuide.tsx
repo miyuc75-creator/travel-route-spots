@@ -15,6 +15,7 @@ type HealthResponse = {
 
 type SetupGuideProps = {
   envStatus: EnvSetupStatus;
+  defaultOpen?: boolean;
 };
 
 function StatusBadge({ ok, label }: { ok: boolean; label: string }) {
@@ -31,7 +32,7 @@ function StatusBadge({ ok, label }: { ok: boolean; label: string }) {
   );
 }
 
-export function SetupGuide({ envStatus }: SetupGuideProps) {
+export function SetupGuide({ envStatus, defaultOpen = false }: SetupGuideProps) {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<HealthResponse | null>(null);
 
@@ -54,15 +55,38 @@ export function SetupGuide({ envStatus }: SetupGuideProps) {
   }
 
   return (
-    <section className="w-full max-w-3xl rounded-2xl border border-zinc-200 bg-white p-6 text-left shadow-sm">
-      <h2 className="text-xl font-semibold text-zinc-900">
-        Step 1: Google Maps Platform セットアップ
-      </h2>
-      <p className="mt-2 text-sm leading-relaxed text-zinc-600">
-        Google Cloud Console で API を有効化し、取得したキーを{" "}
-        <code className="rounded bg-zinc-100 px-1.5 py-0.5 text-xs">.env.local</code>{" "}
-        に設定してください。
-      </p>
+    <details
+      open={defaultOpen}
+      className="w-full max-w-3xl rounded-2xl border border-zinc-200 bg-white shadow-sm"
+    >
+      <summary className="cursor-pointer list-none p-6 [&::-webkit-details-marker]:hidden">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <h2 className="text-xl font-semibold text-zinc-900">
+              Step 1: Google Maps Platform セットアップ
+            </h2>
+            <p className="mt-1 text-sm text-zinc-600">
+              {envStatus.ready ? "設定完了" : "API キーの設定が必要です"}
+            </p>
+          </div>
+          <span
+            className={`shrink-0 rounded-full px-3 py-1 text-sm font-medium ${
+              envStatus.ready
+                ? "bg-emerald-100 text-emerald-800"
+                : "bg-amber-100 text-amber-800"
+            }`}
+          >
+            {envStatus.ready ? "完了" : "未完了"}
+          </span>
+        </div>
+      </summary>
+
+      <div className="border-t border-zinc-100 px-6 pb-6">
+        <p className="mt-4 text-sm leading-relaxed text-zinc-600">
+          Google Cloud Console で API を有効化し、取得したキーを{" "}
+          <code className="rounded bg-zinc-100 px-1.5 py-0.5 text-xs">.env.local</code>{" "}
+          に設定してください。
+        </p>
 
       <ol className="mt-5 list-decimal space-y-2 pl-5 text-sm text-zinc-700">
         <li>
@@ -140,6 +164,7 @@ export function SetupGuide({ envStatus }: SetupGuideProps) {
           )}
         </div>
       )}
-    </section>
+      </div>
+    </details>
   );
 }
