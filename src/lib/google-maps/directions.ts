@@ -30,6 +30,9 @@ type DirectionsLeg = {
 type DirectionsRoute = {
   summary: string;
   legs: DirectionsLeg[];
+  overview_polyline?: {
+    points: string;
+  };
   fare?: {
     currency: string;
     value: number;
@@ -167,6 +170,7 @@ function parseRoute(
     fareNote,
     isAlternative: index > 0,
     steps: summarizeSteps(route.legs),
+    polyline: route.overview_polyline?.points ?? "",
   };
 }
 

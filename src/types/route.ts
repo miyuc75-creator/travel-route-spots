@@ -26,6 +26,7 @@ export type RouteOption = {
   fareNote: string | null;
   isAlternative: boolean;
   steps: string[];
+  polyline: string;
 };
 
 export type RouteSearchResult = {
