@@ -1,5 +1,5 @@
-import { RouteSearchForm } from "@/components/RouteSearchForm";
 import { SetupGuide } from "@/components/SetupGuide";
+import { TripPlanner } from "@/components/TripPlanner";
 import { getEnvSetupStatus } from "@/lib/env";
 
 export default function Home() {
@@ -21,7 +21,7 @@ export default function Home() {
           </p>
         </div>
 
-        <RouteSearchForm disabled={!envStatus.ready} />
+        <TripPlanner disabled={!envStatus.ready} />
 
         {!envStatus.ready && (
           <p className="text-sm text-amber-700">

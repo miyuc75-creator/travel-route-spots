@@ -20,7 +20,7 @@ export type ApiCheckResult = {
 async function callGoogleApi<T extends { status: GoogleApiStatus; error_message?: string }>(
   url: URL,
 ): Promise<ApiCheckResult> {
-  const response = await fetch(url.toString());
+  const response = await fetch(url.toString(), { cache: "no-store" });
 
   if (!response.ok) {
     return {

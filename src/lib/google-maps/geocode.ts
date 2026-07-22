@@ -45,7 +45,7 @@ export async function geocodeAddress(input: string): Promise<GeocodedLocation> {
   url.searchParams.set("region", "jp");
   url.searchParams.set("key", apiKey);
 
-  const response = await fetch(url.toString());
+  const response = await fetch(url.toString(), { cache: "no-store" });
 
   if (!response.ok) {
     throw new GeocodingError("位置情報の取得に失敗しました");

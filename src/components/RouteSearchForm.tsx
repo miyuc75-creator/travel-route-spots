@@ -10,6 +10,7 @@ type ValidateRouteResponse =
 
 type RouteSearchFormProps = {
   disabled?: boolean;
+  onValidated?: (route: ValidatedRouteSearch | null) => void;
 };
 
 const EXAMPLE_ROUTES = [
@@ -70,7 +71,10 @@ function ValidatedLocationCard({
   );
 }
 
-export function RouteSearchForm({ disabled = false }: RouteSearchFormProps) {
+export function RouteSearchForm({
+  disabled = false,
+  onValidated,
+}: RouteSearchFormProps) {
   const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
   const [loading, setLoading] = useState(false);
@@ -84,6 +88,7 @@ export function RouteSearchForm({ disabled = false }: RouteSearchFormProps) {
     setDestination(origin);
     setValidatedRoute(null);
     setError(null);
+    onValidated?.(null);
   }
 
   function applyExample(example: (typeof EXAMPLE_ROUTES)[number]) {
@@ -91,6 +96,19 @@ export function RouteSearchForm({ disabled = false }: RouteSearchFormProps) {
     setDestination(example.destination);
     setValidatedRoute(null);
     setError(null);
+    onValidated?.(null);
+  }
+
+  function updateOrigin(value: string) {
+    setOrigin(value);
+    setValidatedRoute(null);
+    onValidated?.(null);
+  }
+
+  function updateDestination(value: string) {
+    setDestination(value);
+    setValidatedRoute(null);
+    onValidated?.(null);
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -98,6 +116,7 @@ export function RouteSearchForm({ disabled = false }: RouteSearchFormProps) {
     setLoading(true);
     setError(null);
     setValidatedRoute(null);
+    onValidated?.(null);
 
     try {
       const response = await fetch("/api/maps/validate-route", {
@@ -114,6 +133,10 @@ export function RouteSearchForm({ disabled = false }: RouteSearchFormProps) {
       }
 
       setValidatedRoute({
+        origin: data.origin,
+        destination: data.destination,
+      });
+      onValidated?.({
         origin: data.origin,
         destination: data.destination,
       });
@@ -139,7 +162,7 @@ export function RouteSearchForm({ disabled = false }: RouteSearchFormProps) {
           label="出発地"
           value={origin}
           placeholder="例: 東京駅、渋谷スクランブル交差点"
-          onChange={setOrigin}
+          onChange={updateOrigin}
           disabled={disabled || loading}
         />
 
@@ -160,7 +183,7 @@ export function RouteSearchForm({ disabled = false }: RouteSearchFormProps) {
           label="目的地"
           value={destination}
           placeholder="例: 浅草寺、大阪城"
-          onChange={setDestination}
+          onChange={updateDestination}
           disabled={disabled || loading}
         />
 
@@ -199,7 +222,7 @@ export function RouteSearchForm({ disabled = false }: RouteSearchFormProps) {
       {validatedRoute && (
         <div className="mt-4 space-y-3">
           <p className="text-sm font-medium text-emerald-800">
-            位置の確認が完了しました（Step 3 でルート検索に使用します）
+            位置の確認が完了しました。下の Step 3 でルートを検索できます。
           </p>
           <ValidatedLocationCard label="出発地" location={validatedRoute.origin} />
           <ValidatedLocationCard
