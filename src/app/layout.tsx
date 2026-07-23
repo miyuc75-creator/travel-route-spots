@@ -15,7 +15,14 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "旅行ルート・周辺スポット検索",
   description:
-    "出発地と目的地からルート・所要時間・概算料金・おすすめスポットを検索するWebアプリ",
+    "出発地と目的地からルート・所要時間・概算料金・サービスエリア・道の駅・観光スポットを検索するWebアプリ",
+  openGraph: {
+    title: "旅行ルート・周辺スポット検索",
+    description:
+      "交通手段別ルートとルート沿いのおすすめスポットを地図上で確認できるポートフォリオアプリ",
+    locale: "ja_JP",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
