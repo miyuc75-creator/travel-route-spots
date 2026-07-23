@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { getRouteColor, loadGoogleMaps } from "@/lib/google-maps/load-maps";
 import type { RouteOption } from "@/types/route";
+import type { RecommendedSpot } from "@/types/spot";
 
 type MapLocation = {
   lat: number;
@@ -15,12 +16,16 @@ type RouteMapProps = {
   origin: MapLocation;
   destination: MapLocation;
   selectedRoute: RouteOption | null;
+  spots?: RecommendedSpot[];
+  selectedSpotId?: string | null;
 };
 
 export function RouteMap({
   origin,
   destination,
   selectedRoute,
+  spots = [],
+  selectedSpotId = null,
 }: RouteMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
@@ -101,6 +106,31 @@ export function RouteMap({
 
     markersRef.current = [originMarker, destinationMarker];
 
+    spots.forEach((spot, index) => {
+      const isSelected = spot.id === selectedSpotId;
+      const marker = new google.maps.Marker({
+        map,
+        position: { lat: spot.lat, lng: spot.lng },
+        title: spot.name,
+        label: {
+          text: String(index + 1),
+          color: "#ffffff",
+          fontWeight: "700",
+        },
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          scale: isSelected ? 11 : 9,
+          fillColor: isSelected ? "#f59e0b" : "#fb923c",
+          fillOpacity: 1,
+          strokeColor: "#ffffff",
+          strokeWeight: 2,
+        },
+      });
+
+      markersRef.current.push(marker);
+      bounds.extend({ lat: spot.lat, lng: spot.lng });
+    });
+
     if (selectedRoute?.polyline) {
       const path = google.maps.geometry.encoding.decodePath(
         selectedRoute.polyline,
@@ -118,7 +148,7 @@ export function RouteMap({
     }
 
     map.fitBounds(bounds, 48);
-  }, [mapReady, origin, destination, selectedRoute]);
+  }, [mapReady, origin, destination, selectedRoute, spots, selectedSpotId]);
 
   if (error) {
     return (
@@ -143,6 +173,7 @@ export function RouteMap({
             表示中: {selectedRoute.modeLabel} — {selectedRoute.summary}
           </span>
         )}
+        {spots.length > 0 && <span>スポット: {spots.length} 件</span>}
       </div>
     </div>
   );

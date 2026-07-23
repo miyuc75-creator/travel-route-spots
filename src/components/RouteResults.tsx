@@ -2,10 +2,12 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import { NearbySpots } from "@/components/NearbySpots";
 import { RouteMap } from "@/components/RouteMap";
 import type { ValidatedRouteSearch } from "@/types/location";
 import type { RouteOption, RouteSearchResult, TransportMode } from "@/types/route";
 import { TRANSPORT_MODES } from "@/types/route";
+import type { RecommendedSpot } from "@/types/spot";
 
 type RoutesResponse =
   | ({ ok: true } & RouteSearchResult)
@@ -109,6 +111,8 @@ export function RouteResults({ validatedRoute }: RouteResultsProps) {
   const [result, setResult] = useState<RouteSearchResult | null>(null);
   const [selectedMode, setSelectedMode] = useState<TransportMode | "all">("all");
   const [selectedRouteId, setSelectedRouteId] = useState<string | null>(null);
+  const [spots, setSpots] = useState<RecommendedSpot[]>([]);
+  const [selectedSpotId, setSelectedSpotId] = useState<string | null>(null);
 
   const filteredRoutes = useMemo(() => {
     if (!result) {
@@ -158,11 +162,18 @@ export function RouteResults({ validatedRoute }: RouteResultsProps) {
     }
   }, [filteredRoutes, selectedRouteId]);
 
+  useEffect(() => {
+    setSpots([]);
+    setSelectedSpotId(null);
+  }, [selectedRouteId]);
+
   async function handleSearchRoutes() {
     setLoading(true);
     setError(null);
     setResult(null);
     setSelectedRouteId(null);
+    setSpots([]);
+    setSelectedSpotId(null);
 
     try {
       const response = await fetch("/api/maps/routes", {
@@ -300,9 +311,20 @@ export function RouteResults({ validatedRoute }: RouteResultsProps) {
                 label: validatedRoute.destination.input,
               }}
               selectedRoute={selectedRoute}
+              spots={spots}
+              selectedSpotId={selectedSpotId}
             />
           </div>
         </section>
+      )}
+
+      {result && (
+        <NearbySpots
+          selectedRoute={selectedRoute}
+          selectedSpotId={selectedSpotId}
+          onSpotsChange={setSpots}
+          onSpotSelect={setSelectedSpotId}
+        />
       )}
     </>
   );
