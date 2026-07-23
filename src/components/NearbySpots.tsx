@@ -16,6 +16,7 @@ type SpotsResponse =
 
 type NearbySpotsProps = {
   selectedRoute: RouteOption | null;
+  destination?: { lat: number; lng: number; label: string };
   selectedSpotId: string | null;
   onSpotsChange: (spots: RecommendedSpot[]) => void;
   onSpotSelect: (spotId: string | null) => void;
@@ -77,7 +78,9 @@ function SpotCard({
 
       <div className="mt-3 flex flex-wrap items-center gap-3 text-sm">
         {spot.rating !== null && (
-          <span className="font-medium text-zinc-900">★ {spot.rating.toFixed(1)}</span>
+          <span className="font-medium text-zinc-900">
+            ★ {spot.rating.toFixed(1)}
+          </span>
         )}
         {spot.userRatingsTotal !== null && (
           <span className="text-zinc-500">
@@ -100,11 +103,12 @@ function SpotCard({
 
 export function NearbySpots({
   selectedRoute,
+  destination,
   selectedSpotId,
   onSpotsChange,
   onSpotSelect,
 }: NearbySpotsProps) {
-  const [category, setCategory] = useState<SpotCategory>("tourist_attraction");
+  const [category, setCategory] = useState<SpotCategory>("all_route_spots");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<SpotsSearchResult | null>(null);
@@ -128,6 +132,9 @@ export function NearbySpots({
         body: JSON.stringify({
           polyline: selectedRoute.polyline,
           category,
+          destination: destination
+            ? { lat: destination.lat, lng: destination.lng }
+            : undefined,
         }),
       });
 
@@ -147,13 +154,15 @@ export function NearbySpots({
     }
   }
 
+  const selectedCategory = SPOT_CATEGORIES.find((item) => item.id === category);
+
   return (
     <section className="w-full max-w-3xl rounded-2xl border border-zinc-200 bg-white p-6 text-left shadow-sm">
       <h2 className="text-xl font-semibold text-zinc-900">
         Step 5: ルート沿いのおすすめスポット
       </h2>
       <p className="mt-2 text-sm leading-relaxed text-zinc-600">
-        選択中のルート沿いを Places API で検索し、観光スポットやグルメなどを表示します。
+        目的地までのルート沿いから、サービスエリア・道の駅・観光スポットなどを検索します。
       </p>
 
       <div className="mt-5">
@@ -175,6 +184,9 @@ export function NearbySpots({
             </button>
           ))}
         </div>
+        {selectedCategory?.description && (
+          <p className="mt-2 text-xs text-zinc-500">{selectedCategory.description}</p>
+        )}
       </div>
 
       <button

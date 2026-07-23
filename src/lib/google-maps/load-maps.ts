@@ -50,3 +50,20 @@ export function getRouteColor(mode: string): string {
       return "#0284c7";
   }
 }
+
+export function getSpotMarkerColor(category: string, isSelected: boolean): string {
+  if (isSelected) {
+    return "#f59e0b";
+  }
+
+  switch (category) {
+    case "service_area":
+      return "#2563eb";
+    case "roadside_station":
+      return "#16a34a";
+    case "tourist_attraction":
+      return "#ea580c";
+    default:
+      return "#fb923c";
+  }
+}

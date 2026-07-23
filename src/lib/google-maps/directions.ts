@@ -109,15 +109,20 @@ function buildFareInfo(
   mode: TransportMode,
   route: DirectionsRoute,
   distanceMeters: number,
-): { fareText: string | null; fareNote: string | null } {
+): {
+  fareText: string | null;
+  fareNote: string | null;
+  fareYen: number | null;
+} {
   if (mode === "walking" || mode === "bicycling") {
-    return { fareText: "無料", fareNote: null };
+    return { fareText: "無料", fareNote: null, fareYen: 0 };
   }
 
   if (route.fare) {
     return {
       fareText: route.fare.text,
       fareNote: null,
+      fareYen: route.fare.value,
     };
   }
 
@@ -126,6 +131,7 @@ function buildFareInfo(
     return {
       fareText: formatYen(estimate),
       fareNote: "燃料・高速道路の概算（参考値）",
+      fareYen: estimate,
     };
   }
 
@@ -133,10 +139,11 @@ function buildFareInfo(
     return {
       fareText: null,
       fareNote: "運賃情報は取得できませんでした",
+      fareYen: null,
     };
   }
 
-  return { fareText: null, fareNote: null };
+  return { fareText: null, fareNote: null, fareYen: null };
 }
 
 function parseRoute(
@@ -151,7 +158,7 @@ function parseRoute(
     return null;
   }
 
-  const { fareText, fareNote } = buildFareInfo(
+  const { fareText, fareNote, fareYen } = buildFareInfo(
     mode,
     route,
     aggregated.distanceMeters,
@@ -168,6 +175,7 @@ function parseRoute(
     durationSeconds: aggregated.durationSeconds,
     fareText,
     fareNote,
+    fareYen,
     isAlternative: index > 0,
     steps: summarizeSteps(route.legs),
     polyline: route.overview_polyline?.points ?? "",

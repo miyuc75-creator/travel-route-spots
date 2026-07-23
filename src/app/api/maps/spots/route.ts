@@ -23,7 +23,11 @@ export async function POST(request: Request) {
   }
 
   try {
-    const result = await searchSpotsAlongRoute(body.polyline, body.category);
+    const result = await searchSpotsAlongRoute(
+      body.polyline,
+      body.category,
+      body.destination,
+    );
 
     return NextResponse.json({
       ok: true,

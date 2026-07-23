@@ -4,10 +4,15 @@ import { useEffect, useMemo, useState } from "react";
 
 import { NearbySpots } from "@/components/NearbySpots";
 import { RouteMap } from "@/components/RouteMap";
+import {
+  applyRouteFilter,
+  getRouteFilterInfo,
+  sortRoutesForDisplay,
+} from "@/lib/google-maps/route-filter";
 import type { ValidatedRouteSearch } from "@/types/location";
 import type { RouteOption, RouteSearchResult, TransportMode } from "@/types/route";
 import { TRANSPORT_MODES } from "@/types/route";
-import type { RecommendedSpot } from "@/types/spot";
+import type { RecommendedSpot, RouteFilterOption } from "@/types/spot";
 
 type RoutesResponse =
   | ({ ok: true } & RouteSearchResult)
@@ -21,11 +26,15 @@ function RouteCard({
   route,
   rank,
   isSelected,
+  isFastest,
+  isCheapest,
   onSelect,
 }: {
   route: RouteOption;
   rank: number;
   isSelected: boolean;
+  isFastest: boolean;
+  isCheapest: boolean;
   onSelect: () => void;
 }) {
   const modeInfo = TRANSPORT_MODES.find((item) => item.mode === route.mode);
@@ -56,6 +65,16 @@ function RouteCard({
             {route.isAlternative && (
               <span className="rounded-full bg-sky-100 px-2.5 py-1 text-xs font-medium text-sky-700">
                 代替ルート
+              </span>
+            )}
+            {isFastest && (
+              <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-medium text-emerald-800">
+                最速
+              </span>
+            )}
+            {isCheapest && (
+              <span className="rounded-full bg-violet-100 px-2.5 py-1 text-xs font-medium text-violet-800">
+                最安値
               </span>
             )}
             {isSelected && (
@@ -110,11 +129,12 @@ export function RouteResults({ validatedRoute }: RouteResultsProps) {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<RouteSearchResult | null>(null);
   const [selectedMode, setSelectedMode] = useState<TransportMode | "all">("all");
+  const [routeFilter, setRouteFilter] = useState<RouteFilterOption>("all");
   const [selectedRouteId, setSelectedRouteId] = useState<string | null>(null);
   const [spots, setSpots] = useState<RecommendedSpot[]>([]);
   const [selectedSpotId, setSelectedSpotId] = useState<string | null>(null);
 
-  const filteredRoutes = useMemo(() => {
+  const modeFilteredRoutes = useMemo(() => {
     if (!result) {
       return [];
     }
@@ -125,6 +145,16 @@ export function RouteResults({ validatedRoute }: RouteResultsProps) {
 
     return result.routes.filter((route) => route.mode === selectedMode);
   }, [result, selectedMode]);
+
+  const routeFilterInfo = useMemo(
+    () => getRouteFilterInfo(modeFilteredRoutes),
+    [modeFilteredRoutes],
+  );
+
+  const filteredRoutes = useMemo(() => {
+    const filtered = applyRouteFilter(modeFilteredRoutes, routeFilter);
+    return sortRoutesForDisplay(filtered, routeFilter);
+  }, [modeFilteredRoutes, routeFilter]);
 
   const availableModes = useMemo(() => {
     if (!result) {
@@ -191,6 +221,7 @@ export function RouteResults({ validatedRoute }: RouteResultsProps) {
 
       setResult(data);
       setSelectedMode("all");
+      setRouteFilter("all");
     } catch {
       setError("ルート検索に失敗しました。時間をおいて再度お試しください。");
     } finally {
@@ -274,16 +305,56 @@ export function RouteResults({ validatedRoute }: RouteResultsProps) {
               ))}
             </div>
 
+            <div>
+              <p className="mb-2 text-xs font-medium text-zinc-500">ルート絞り込み</p>
+              <div className="flex flex-wrap gap-2">
+                {(
+                  [
+                    { id: "all", label: "すべて表示" },
+                    { id: "fastest", label: "最速" },
+                    { id: "cheapest", label: "最安値" },
+                  ] as const
+                ).map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => setRouteFilter(item.id)}
+                    className={`rounded-full px-3 py-1.5 text-xs font-medium transition ${
+                      routeFilter === item.id
+                        ? "bg-violet-600 text-white"
+                        : "border border-zinc-200 text-zinc-600 hover:bg-zinc-50"
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+              {routeFilter === "cheapest" &&
+                routeFilterInfo.cheapestRouteIds.length === 0 && (
+                  <p className="mt-2 text-xs text-amber-700">
+                    運賃情報があるルートがありません。徒歩・自転車は無料です。
+                  </p>
+                )}
+            </div>
+
             <div className="space-y-3">
-              {filteredRoutes.map((route, index) => (
-                <RouteCard
-                  key={route.id}
-                  route={route}
-                  rank={index + 1}
-                  isSelected={selectedRoute?.id === route.id}
-                  onSelect={() => setSelectedRouteId(route.id)}
-                />
-              ))}
+              {filteredRoutes.length === 0 ? (
+                <p className="rounded-lg border border-zinc-200 bg-zinc-50 p-4 text-sm text-zinc-600">
+                  条件に一致するルートがありません。絞り込みを変更してください。
+                </p>
+              ) : (
+                filteredRoutes.map((route, index) => (
+                  <RouteCard
+                    key={route.id}
+                    route={route}
+                    rank={index + 1}
+                    isSelected={selectedRoute?.id === route.id}
+                    isFastest={routeFilterInfo.fastestRouteIds.includes(route.id)}
+                    isCheapest={routeFilterInfo.cheapestRouteIds.includes(route.id)}
+                    onSelect={() => setSelectedRouteId(route.id)}
+                  />
+                ))
+              )}
             </div>
           </div>
         )}
@@ -321,6 +392,11 @@ export function RouteResults({ validatedRoute }: RouteResultsProps) {
       {result && (
         <NearbySpots
           selectedRoute={selectedRoute}
+          destination={{
+            lat: validatedRoute.destination.lat,
+            lng: validatedRoute.destination.lng,
+            label: validatedRoute.destination.input,
+          }}
           selectedSpotId={selectedSpotId}
           onSpotsChange={setSpots}
           onSpotSelect={setSelectedSpotId}

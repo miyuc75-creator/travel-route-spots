@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import { getRouteColor, loadGoogleMaps } from "@/lib/google-maps/load-maps";
+import { getRouteColor, getSpotMarkerColor, loadGoogleMaps } from "@/lib/google-maps/load-maps";
 import type { RouteOption } from "@/types/route";
 import type { RecommendedSpot } from "@/types/spot";
 
@@ -120,7 +120,7 @@ export function RouteMap({
         icon: {
           path: google.maps.SymbolPath.CIRCLE,
           scale: isSelected ? 11 : 9,
-          fillColor: isSelected ? "#f59e0b" : "#fb923c",
+          fillColor: getSpotMarkerColor(spot.category, isSelected),
           fillOpacity: 1,
           strokeColor: "#ffffff",
           strokeWeight: 2,

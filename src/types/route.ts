@@ -24,6 +24,7 @@ export type RouteOption = {
   durationSeconds: number;
   fareText: string | null;
   fareNote: string | null;
+  fareYen: number | null;
   isAlternative: boolean;
   steps: string[];
   polyline: string;
