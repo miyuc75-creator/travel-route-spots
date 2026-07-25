@@ -8,6 +8,22 @@
 
 **GitHub:** https://github.com/miyuc75-creator/travel-route-spots
 
+## スクリーンショット
+
+東京 → 長野 のルート検索を例に、入力から結果確認までの画面です。
+
+| トップ・入力 | ルート検索 |
+| --- | --- |
+| ![出発地・目的地の入力画面](docs/screenshots/01-input.png) | ![ルート検索画面](docs/screenshots/02-route-search.png) |
+
+| ルート比較結果 | 地図表示 |
+| --- | --- |
+| ![ルート比較結果（所要時間・距離・料金）](docs/screenshots/03-route-results.png) | ![地図上でのルート表示](docs/screenshots/04-map.png) |
+
+| ルート沿いのスポット検索 |
+| --- |
+| ![ルート沿いのおすすめスポット検索](docs/screenshots/05-nearby-spots.png) |
+
 ## 解決する課題
 
 旅行の計画時、経路検索と周辺スポットの調べ物を別々のアプリやサイトで行う必要があり、手間がかかります。  
