@@ -63,7 +63,7 @@ export function SetupGuide({ envStatus, defaultOpen = false }: SetupGuideProps) 
         <div className="flex items-center justify-between gap-4">
           <div>
             <h2 className="text-xl font-semibold text-zinc-900">
-              Step 1: Google Maps Platform セットアップ
+              Google Maps API の設定
             </h2>
             <p className="mt-1 text-sm text-zinc-600">
               {envStatus.ready ? "設定完了" : "API キーの設定が必要です"}

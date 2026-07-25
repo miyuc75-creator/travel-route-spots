@@ -149,11 +149,9 @@ export function RouteSearchForm({
 
   return (
     <section className="w-full max-w-3xl rounded-2xl border border-zinc-200 bg-white p-6 text-left shadow-sm">
-      <h2 className="text-xl font-semibold text-zinc-900">
-        Step 2: 出発地・目的地を入力
-      </h2>
+      <h2 className="text-xl font-semibold text-zinc-900">出発地・目的地</h2>
       <p className="mt-2 text-sm leading-relaxed text-zinc-600">
-        住所・駅名・観光スポット名などを入力してください。Geocoding API で位置を確認します。
+        住所・駅名・観光スポット名などを入力してください。入力内容から位置を確認します。
       </p>
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-4">
@@ -222,7 +220,7 @@ export function RouteSearchForm({
       {validatedRoute && (
         <div className="mt-4 space-y-3">
           <p className="text-sm font-medium text-emerald-800">
-            位置の確認が完了しました。下の Step 3 でルートを検索できます。
+            位置の確認が完了しました。続けてルートを検索できます。
           </p>
           <ValidatedLocationCard label="出発地" location={validatedRoute.origin} />
           <ValidatedLocationCard

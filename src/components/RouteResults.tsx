@@ -232,9 +232,7 @@ export function RouteResults({ validatedRoute }: RouteResultsProps) {
   return (
     <>
       <section className="w-full max-w-3xl rounded-2xl border border-zinc-200 bg-white p-6 text-left shadow-sm">
-        <h2 className="text-xl font-semibold text-zinc-900">
-          Step 3: ルート検索
-        </h2>
+        <h2 className="text-xl font-semibold text-zinc-900">ルート検索</h2>
         <p className="mt-2 text-sm leading-relaxed text-zinc-600">
           公共交通・車・徒歩・自転車ごとに複数ルートを検索し、所要時間・距離・概算料金を表示します。
         </p>
@@ -362,9 +360,7 @@ export function RouteResults({ validatedRoute }: RouteResultsProps) {
 
       {result && (
         <section className="w-full max-w-3xl rounded-2xl border border-zinc-200 bg-white p-6 text-left shadow-sm">
-          <h2 className="text-xl font-semibold text-zinc-900">
-            Step 4: 地図表示
-          </h2>
+          <h2 className="text-xl font-semibold text-zinc-900">地図で確認</h2>
           <p className="mt-2 text-sm leading-relaxed text-zinc-600">
             選択したルートを地図上に表示します。ルートカードをクリックすると地図が切り替わります。
           </p>

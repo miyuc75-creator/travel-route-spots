@@ -159,7 +159,7 @@ export function NearbySpots({
   return (
     <section className="w-full max-w-3xl rounded-2xl border border-zinc-200 bg-white p-6 text-left shadow-sm">
       <h2 className="text-xl font-semibold text-zinc-900">
-        Step 5: ルート沿いのおすすめスポット
+        ルート沿いのおすすめスポット
       </h2>
       <p className="mt-2 text-sm leading-relaxed text-zinc-600">
         目的地までのルート沿いから、サービスエリア・道の駅・観光スポットなどを検索します。
